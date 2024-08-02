@@ -6,33 +6,48 @@
     <title>Pie Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     @vite(['resources/css/app.css','resources/js/app.js'])
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 <body>
     
 <div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
     <form action="{{ route('excel.data') }}" method="GET">
-        <select name="column" onchange="this.form.submit()">
-            @foreach($columns as $key => $value)
-                <option value="{{ $key }}" {{ $selectedColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
-            @endforeach
-        </select>
+        <div>
+            <label for="pie_column">Pie Chart Column:</label>
+            <select name="pie_column" id="pie_column" onchange="this.form.submit()">
+    @foreach($columns as $key => $value)
+        <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
+    @endforeach
+</select>
+        </div>
+        <div>
+            <label for="bar_column">Bar Chart Column:</label>
+            <select name="bar_column" id="bar_column" onchange="this.form.submit()">
+    @foreach($columns as $key => $value)
+        <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
+    @endforeach
+</select>
+        </div>
     </form>
     <div id="pie-chart"></div>
+    <div id="bar-chart"></div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    var options = {
-        series: @json($dataCounts),
+    var pieDataCounts = @json($pieDataCounts);
+    var pieDataLabels = @json($pieDataLabels);
+    var barDataCounts = @json($barDataCounts);
+    var barDataLabels = @json($barDataLabels);
+
+    var pieOptions = {
+        series: pieDataCounts,
         chart: {
             type: 'pie',
-            height: '100%', // Set height to 100% of the container
-            width: '100%'  // Set width to 100% of the container
+            height: '100%',
+            width: '100%'
         },
-        labels: @json($dataLabels),
+        labels: pieDataLabels,
         responsive: [{
             breakpoint: 480,
             options: {
@@ -46,29 +61,47 @@ document.addEventListener('DOMContentLoaded', function () {
         }]
     };
 
-    var chart = new ApexCharts(document.querySelector("#pie-chart"), options);
-    chart.render();
-
-    // Membuat chart draggable dan resizable
-    $("#pie-chart").resizable({
-        alsoResize: "#pie-chart svg", // Resize the SVG element inside the container
-        resize: function(event, ui) {
-            chart.updateOptions({
+    var barOptions = {
+        series: [{
+            name: 'Data',
+            data: barDataCounts
+        }],
+        chart: {
+            type: 'bar',
+            height: '100%',
+            width: '100%'
+        },
+        colors: ['#FF4560', '#008FFB', '#00E396', '#775DD0'],
+        xaxis: {
+            categories: barDataLabels
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
                 chart: {
-                    width: ui.size.width,
-                    height: ui.size.height
+                    width: 200
+                },
+                legend: {
+                    position: 'bottom'
                 }
-            }, false, false, false);
-        }
-    }).draggable();
+            }
+        }]
+    };
+
+    var pieChart = new ApexCharts(document.querySelector("#pie-chart"), pieOptions);
+    pieChart.render();
+
+    var barChart = new ApexCharts(document.querySelector("#bar-chart"), barOptions);
+    barChart.render();
 });
 </script>
 
 <style>
-#pie-chart {
+#pie-chart, #bar-chart {
     padding: 10px;
     background-color: #fff;
     border: 1px solid #ddd;
+    margin-top: 20px;
 }
 </style>
 

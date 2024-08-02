@@ -19,20 +19,44 @@ class ExcelDataController extends Controller
         $cellIterator = $headerRow->getCellIterator();
         $cellIterator->setIterateOnlyExistingCells(true);
         $columns = [];
+        $columnDataCounts = [];
         foreach ($cellIterator as $cell) {
-            $columns[$cell->getColumn()] = $cell->getValue();
+            $column = $cell->getColumn();
+            $columns[$column] = $cell->getValue();
+            $columnDataCounts[$column] = $this->countUniqueValues($worksheet, $column);
         }
 
-        $selectedColumn = $request->input('column', array_keys($columns)[0] ?? null);
+        // Filter kolom yang memiliki terlalu banyak nilai unik
+        $maxUniqueValues = 30; // Batas maksimum nilai unik
+        $filteredColumns = array_filter($columns, function ($key) use ($columnDataCounts, $maxUniqueValues) {
+            return $columnDataCounts[$key] <= $maxUniqueValues;
+        }, ARRAY_FILTER_USE_KEY);
 
-        if ($selectedColumn === null) {
-            throw new \Exception("Tidak ada kolom yang dipilih atau file tidak memiliki kolom.");
-        }
+        // Menangani pemilihan kolom untuk pie chart dan bar chart
+        $selectedPieColumn = $request->input('pie_column', array_keys($filteredColumns)[0] ?? null);
+        $selectedBarColumn = $request->input('bar_column', array_keys($filteredColumns)[0] ?? null);
 
-        // Membaca data dari kolom yang dipilih
+        // Membaca data dari kolom yang dipilih untuk pie chart dan bar chart
+        $pieData = $this->readColumnData($worksheet, $selectedPieColumn);
+        $barData = $this->readColumnData($worksheet, $selectedBarColumn);
+
+        return view('tes', [
+            'columns' => $filteredColumns,
+            'selectedPieColumn' => $selectedPieColumn,
+            'selectedBarColumn' => $selectedBarColumn,
+            'pieDataLabels' => $pieData ? array_keys($pieData) : [],
+            'pieDataCounts' => $pieData ? array_values($pieData) : [],
+            'barDataLabels' => $barData ? array_keys($barData) : [],
+            'barDataCounts' => $barData ? array_values($barData) : [],
+            'error' => $error ?? null
+        ]);
+    }
+
+    private function readColumnData($worksheet, $column, $maxUniqueValues = 30)
+    {
         $data = [];
         foreach ($worksheet->getRowIterator(2) as $row) {
-            $cellCoordinate = $selectedColumn . $row->getRowIndex();
+            $cellCoordinate = $column . $row->getRowIndex();
             $value = $worksheet->getCell($cellCoordinate)->getValue();
             if ($value !== null && $value !== '') {
                 if (!isset($data[$value])) {
@@ -42,14 +66,23 @@ class ExcelDataController extends Controller
             }
         }
 
-        $dataLabels = array_keys($data);
-        $dataCounts = array_values($data);
+        if (count($data) > $maxUniqueValues) {
+            return null; // atau bisa juga throw new \Exception("Data exceeds maximum unique values.");
+        }
 
-        return view('tes', [
-            'columns' => $columns,
-            'selectedColumn' => $selectedColumn,
-            'dataLabels' => $dataLabels,
-            'dataCounts' => $dataCounts
-        ]);
+        return $data;
+    }
+
+    private function countUniqueValues($worksheet, $column)
+    {
+        $uniqueValues = [];
+        foreach ($worksheet->getRowIterator(2) as $row) {
+            $cellCoordinate = $column . $row->getRowIndex();
+            $value = $worksheet->getCell($cellCoordinate)->getValue();
+            if (!in_array($value, $uniqueValues)) {
+                $uniqueValues[] = $value;
+            }
+        }
+        return count($uniqueValues);
     }
 }
