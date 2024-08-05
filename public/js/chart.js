@@ -52,7 +52,21 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       colors: ['#FF4560', '#008FFB', '#00E396', '#775DD0'],
       xaxis: {
-            categories: barDataLabels
+            categories: barDataLabels,
+            labels: {
+               style: {
+                  fontFamily: "Inter, sans-serif",
+                  cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+               }
+            }
+      },
+      yaxis: {
+            labels: {
+               style: {
+                  fontFamily: "Inter, sans-serif",
+                  cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+               }
+            }
       },
       responsive: [{
             breakpoint: 480,

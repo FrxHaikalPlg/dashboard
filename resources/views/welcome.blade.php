@@ -26,12 +26,11 @@
       
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
 
-      
-         <div class="border-2 border-dashed border-gray-300 rounded-lg dark:border-gray-600 h-64 md:h-96 flex flex-col ">
+         <div class="border-2 border-dashed border-gray-300 rounded-lg dark:border-gray-600 h-64 md:h-96 flex flex-col bg-white dark:bg-gray-800">
             <form action="{{ route('excel.data') }}" method="GET" class="p-4">
                <div>
-                  <label for="pie_column">Pie Chart Column:</label>
-                  <select name="pie_column" id="pie_column">
+                  <label for="pie_column" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pie Chart Column:</label>
+                  <select name="pie_column" id="pie_column" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                      @foreach($columns as $key => $value)
                         <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ strlen($value) > 15 ? substr($value, 0, 15) . '...' : $value }}</option>
                      @endforeach
@@ -42,12 +41,11 @@
             <div id="pie-chart" class="flex-1 overflow-hidden m-0 p-0 relative"></div>
          </div>
 
-
-         <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-64 md:h-96 flex flex-col max-h-96">
+         <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-64 md:h-96 flex flex-col max-h-96 bg-white dark:bg-gray-800">
             <form action="{{ route('excel.data') }}" method="GET" class="p-4">
                <div>
-                  <label for="bar_column">Bar Chart Column:</label>
-                  <select name="bar_column" id="bar_column">
+                  <label for="bar_column" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bar Chart Column:</label>
+                  <select name="bar_column" id="bar_column" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                      @foreach($columns as $key => $value)
                         <option value="{{ $key }}" {{ $selectedBarColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
                      @endforeach
@@ -57,10 +55,10 @@
             </form>
             <div id="bar-chart" class="flex-1 overflow-hidden m-0 p-0 relative"></div>
          </div>
-         <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-64 md:h-96 flex flex-col max-h-96"></div>
-         <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-64 md:h-96 flex flex-col max-h-96"></div>
+         <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-64 md:h-96 flex flex-col max-h-96 bg-white dark:bg-gray-800"></div>
+         <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-64 md:h-96 flex flex-col max-h-96 bg-white dark:bg-gray-800"></div>
       </div>
-      <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-96 mb-4"></div>
+      <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-96 mb-4 bg-white dark:bg-gray-800"></div>
    </main>
    </div>
 
