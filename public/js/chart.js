@@ -9,11 +9,21 @@ document.addEventListener('DOMContentLoaded', function () {
    var pieOptions = {
       series: pieDataCounts,
       chart: {
-            type: 'pie',
-            height: '90%',
-            width: '100%'
+         type: 'pie',
+         height: '90%', // Adjust height based on data length
+         width: '100%'
       },
       labels: pieDataLabels,
+      legend: {
+         position: 'bottom', // Pindahkan posisi legenda ke kanan
+         width: '20%', // Atur lebar legenda menjadi 20% dari ukuran pie chart
+         formatter: function(seriesName, opts) {
+            return seriesName + ": " + opts.w.globals.series[opts.seriesIndex];
+         },
+         itemMargin: {
+            vertical: 5 // Menambahkan margin vertikal untuk membuat setiap point di baris baru
+         }
+      },
       responsive: [{
             breakpoint: 480,
             options: {
@@ -21,7 +31,10 @@ document.addEventListener('DOMContentLoaded', function () {
                   width: 200
                },
                legend: {
-                  position: 'bottom'
+                  position: 'bottom',
+                  itemMargin: {
+                     vertical: 5 // Menambahkan margin vertikal untuk responsive
+                  }
                }
             }
       }]

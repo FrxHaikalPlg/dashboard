@@ -23,14 +23,17 @@
    <x-sidebar></x-sidebar>
    <!-- Content -->
    <main class="flex-1 p-4 md:ml-64 h-auto pt-10 overflow-y-auto">
+      
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-         <div class="border-2 border-dashed border-gray-300 rounded-lg dark:border-gray-600 h-64 md:h-96 flex flex-col max-h-96">
+
+      
+         <div class="border-2 border-dashed border-gray-300 rounded-lg dark:border-gray-600 h-64 md:h-96 flex flex-col ">
             <form action="{{ route('excel.data') }}" method="GET" class="p-4">
                <div>
                   <label for="pie_column">Pie Chart Column:</label>
                   <select name="pie_column" id="pie_column">
                      @foreach($columns as $key => $value)
-                        <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
+                        <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ strlen($value) > 15 ? substr($value, 0, 15) . '...' : $value }}</option>
                      @endforeach
                   </select>
                   <input type="hidden" name="bar_column" value="{{ $selectedBarColumn }}">
@@ -38,6 +41,8 @@
             </form>
             <div id="pie-chart" class="flex-1 overflow-hidden m-0 p-0 relative"></div>
          </div>
+
+
          <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-64 md:h-96 flex flex-col max-h-96">
             <form action="{{ route('excel.data') }}" method="GET" class="p-4">
                <div>
