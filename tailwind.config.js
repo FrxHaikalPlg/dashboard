@@ -8,6 +8,7 @@ export default {
 }
 
 module.exports = {
+  darkMode: 'media',
   content: [
     "./resources/**/*.blade.php",
     "./resources/**/*.js",
