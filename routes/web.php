@@ -8,6 +8,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/', [ExcelDataController::class, 'index'])->name('excel.data');
+
 Route::get('/tes', function () {
     return view('tes');
 });

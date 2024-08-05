@@ -15,18 +15,18 @@
         <div>
             <label for="pie_column">Pie Chart Column:</label>
             <select name="pie_column" id="pie_column" onchange="this.form.submit()">
-    @foreach($columns as $key => $value)
-        <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
-    @endforeach
-</select>
+                @foreach($columns as $key => $value)
+                    <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
+                @endforeach
+            </select>
         </div>
         <div>
             <label for="bar_column">Bar Chart Column:</label>
             <select name="bar_column" id="bar_column" onchange="this.form.submit()">
-    @foreach($columns as $key => $value)
-        <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
-    @endforeach
-</select>
+                @foreach($columns as $key => $value)
+                    <option value="{{ $key }}" {{ $selectedBarColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
+                @endforeach
+            </select>
         </div>
     </form>
     <div id="pie-chart"></div>

@@ -40,7 +40,7 @@ class ExcelDataController extends Controller
         $pieData = $this->readColumnData($worksheet, $selectedPieColumn);
         $barData = $this->readColumnData($worksheet, $selectedBarColumn);
 
-        return view('tes', [
+        return view('welcome', [
             'columns' => $filteredColumns,
             'selectedPieColumn' => $selectedPieColumn,
             'selectedBarColumn' => $selectedBarColumn,
