@@ -5,14 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
+use Illuminate\Support\Facades\Storage;
 
 class ExcelDataController extends Controller
 {
-    private $worksheet;
+    protected $worksheet;
 
     public function __construct()
     {
-        $path = storage_path('app/public/tes_data.xlsx');
+        $this->loadSpreadsheet(storage_path('app/public/tes_data.xlsx'));
+    }
+
+    public function loadSpreadsheet($path)
+    {
         $reader = new Xlsx();
         $spreadsheet = $reader->load($path);
         $this->worksheet = $spreadsheet->getActiveSheet();
@@ -134,6 +139,7 @@ class ExcelDataController extends Controller
         }
         return count($uniqueValues);
     }
+
     public function getChartData(Request $request)
     {
         $pieColumn = $request->input('pie_column');
@@ -150,4 +156,17 @@ class ExcelDataController extends Controller
         ]);
     }
 
+    public function uploadFile(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx|max:2048',
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->storeAs('public', 'tes_data.xlsx');
+
+        $this->loadSpreadsheet(storage_path('app/' . $path));
+
+        return redirect()->back()->with('success', 'File uploaded successfully.');
+    }
 }
