@@ -84,8 +84,12 @@
             </button>
 
             <div class="p-4 md:p-5 text-center">
-               <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
-               <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
+               <form action="{{ route('upload.file') }}" method="POST" enctype="multipart/form-data">
+                  @csrf
+                  <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
+                  <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file" name="file">
+                  <button type="submit" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Upload</button>
+               </form>
             </div>
          </div>
       </div>
