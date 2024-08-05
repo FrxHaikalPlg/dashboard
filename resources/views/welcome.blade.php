@@ -71,6 +71,7 @@
                      <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
                   @endforeach
                </select>
+               <input type="hidden" name="bar_column" value="{{ $selectedBarColumn }}">
             </div>
          </form>
          <div id="pie-chart" class="flex-1 overflow-hidden m-0 p-0 relative"></div>
@@ -84,6 +85,7 @@
                      <option value="{{ $key }}" {{ $selectedBarColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
                   @endforeach
                </select>
+               <input type="hidden" name="pie_column" value="{{ $selectedPieColumn }}">
             </div>
          </form>
          <div id="bar-chart" class="flex-1 overflow-hidden m-0 p-0 relative"></div>

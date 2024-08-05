@@ -9,9 +9,3 @@ Route::get('/', function () {
 });
 
 Route::get('/', [ExcelDataController::class, 'index'])->name('excel.data');
-
-Route::get('/tes', function () {
-    return view('tes');
-});
-
-Route::get('/tes', [ExcelDataController::class, 'index'])->name('excel.data');
