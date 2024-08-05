@@ -4,18 +4,24 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ExcelDataController extends Controller
 {
-    public function index(Request $request)
+    private $worksheet;
+
+    public function __construct()
     {
         $path = storage_path('app/public/tes_data.xlsx');
         $reader = new Xlsx();
         $spreadsheet = $reader->load($path);
-        $worksheet = $spreadsheet->getActiveSheet();
+        $this->worksheet = $spreadsheet->getActiveSheet();
+    }
 
+    public function index(Request $request)
+    {
         // Mendapatkan semua nama kolom dari header
-        $headerRow = $worksheet->getRowIterator(1)->current();
+        $headerRow = $this->worksheet->getRowIterator(1)->current();
         $cellIterator = $headerRow->getCellIterator();
         $cellIterator->setIterateOnlyExistingCells(true);
         $columns = [];
@@ -23,7 +29,7 @@ class ExcelDataController extends Controller
         foreach ($cellIterator as $cell) {
             $column = $cell->getColumn();
             $columns[$column] = $cell->getValue();
-            $columnDataCounts[$column] = $this->countUniqueValues($worksheet, $column);
+            $columnDataCounts[$column] = $this->countUniqueValues($column);
         }
 
         // Filter kolom yang memiliki terlalu banyak nilai unik
@@ -37,8 +43,8 @@ class ExcelDataController extends Controller
         $selectedBarColumn = $request->input('bar_column', array_keys($filteredColumns)[0] ?? null);
 
         // Membaca data dari kolom yang dipilih untuk pie chart dan bar chart
-        $pieData = $this->readColumnData($worksheet, $selectedPieColumn);
-        $barData = $this->readColumnData($worksheet, $selectedBarColumn);
+        $pieData = $this->readColumnData($selectedPieColumn);
+        $barData = $this->readColumnData($selectedBarColumn);
 
         return view('welcome', [
             'columns' => $filteredColumns,
@@ -52,12 +58,28 @@ class ExcelDataController extends Controller
         ]);
     }
 
-    private function readColumnData($worksheet, $column, $maxUniqueValues = 30)
+    public function getChartData(Request $request)
+    {
+        $pieColumn = $request->input('pie_column');
+        $barColumn = $request->input('bar_column');
+
+        $pieData = $this->readColumnData($pieColumn);
+        $barData = $this->readColumnData($barColumn);
+
+        return response()->json([
+            'pieDataLabels' => array_keys($pieData),
+            'pieDataCounts' => array_values($pieData),
+            'barDataLabels' => array_keys($barData),
+            'barDataCounts' => array_values($barData)
+        ]);
+    }
+
+    private function readColumnData($column, $maxUniqueValues = 30)
     {
         $data = [];
-        foreach ($worksheet->getRowIterator(2) as $row) {
+        foreach ($this->worksheet->getRowIterator(2) as $row) {
             $cellCoordinate = $column . $row->getRowIndex();
-            $value = $worksheet->getCell($cellCoordinate)->getValue();
+            $value = $this->worksheet->getCell($cellCoordinate)->getValue();
             if ($value !== null && $value !== '') {
                 if (!isset($data[$value])) {
                     $data[$value] = 0;
@@ -73,12 +95,12 @@ class ExcelDataController extends Controller
         return $data;
     }
 
-    private function countUniqueValues($worksheet, $column)
+    private function countUniqueValues($column)
     {
         $uniqueValues = [];
-        foreach ($worksheet->getRowIterator(2) as $row) {
+        foreach ($this->worksheet->getRowIterator(2) as $row) {
             $cellCoordinate = $column . $row->getRowIndex();
-            $value = $worksheet->getCell($cellCoordinate)->getValue();
+            $value = $this->worksheet->getCell($cellCoordinate)->getValue();
             if (!in_array($value, $uniqueValues)) {
                 $uniqueValues[] = $value;
             }

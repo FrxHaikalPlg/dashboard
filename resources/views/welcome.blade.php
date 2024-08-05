@@ -66,7 +66,7 @@
          <form action="{{ route('excel.data') }}" method="GET" class="p-4">
             <div>
                <label for="pie_column">Pie Chart Column:</label>
-               <select name="pie_column" id="pie_column" onchange="this.form.submit()">
+               <select name="pie_column" id="pie_column">
                   @foreach($columns as $key => $value)
                      <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
                   @endforeach
@@ -80,7 +80,7 @@
          <form action="{{ route('excel.data') }}" method="GET" class="p-4">
             <div>
                <label for="bar_column">Bar Chart Column:</label>
-               <select name="bar_column" id="bar_column" onchange="this.form.submit()">
+               <select name="bar_column" id="bar_column">
                   @foreach($columns as $key => $value)
                      <option value="{{ $key }}" {{ $selectedBarColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
                   @endforeach
@@ -98,6 +98,8 @@
 </div>
 
 <script>
+var pieChart, barChart; // Mendefinisikan variabel di luar untuk akses global
+
 document.addEventListener('DOMContentLoaded', function () {
     var pieDataCounts = @json($pieDataCounts);
     var pieDataLabels = @json($pieDataLabels);
@@ -152,12 +154,41 @@ document.addEventListener('DOMContentLoaded', function () {
         }]
     };
 
-    var pieChart = new ApexCharts(document.querySelector("#pie-chart"), pieOptions);
+    pieChart = new ApexCharts(document.querySelector("#pie-chart"), pieOptions);
     pieChart.render();
 
-    var barChart = new ApexCharts(document.querySelector("#bar-chart"), barOptions);
+    barChart = new ApexCharts(document.querySelector("#bar-chart"), barOptions);
     barChart.render();
 });
+
+document.getElementById('pie_column').addEventListener('change', function() {
+    updateChartData('pie');
+});
+
+document.getElementById('bar_column').addEventListener('change', function() {
+    updateChartData('bar');
+});
+
+function updateChartData(chartType) {
+    var pieColumn = document.getElementById('pie_column').value;
+    var barColumn = document.getElementById('bar_column').value;
+
+    fetch(`/api/chart-data?pie_column=${pieColumn}&bar_column=${barColumn}`)
+        .then(response => response.json())
+        .then(data => {
+            if (chartType === 'pie') {
+                pieChart.updateOptions({
+                    series: data.pieDataCounts,
+                    labels: data.pieDataLabels
+                });
+            } else {
+                barChart.updateOptions({
+                    series: [{ data: data.barDataCounts }],
+                    xaxis: { categories: data.barDataLabels }
+                });
+            }
+        });
+}
 </script>
 
 <style>

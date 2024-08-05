@@ -9,3 +9,5 @@ Route::get('/', function () {
 });
 
 Route::get('/', [ExcelDataController::class, 'index'])->name('excel.data');
+
+Route::get('/api/chart-data', [ExcelDataController::class, 'getChartData'])->name('api.chart-data');
