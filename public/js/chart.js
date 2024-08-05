@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
       series: pieDataCounts,
       chart: {
          type: 'pie',
-         height: '90%', // Adjust height based on data length
+         height: '80%', // Adjust height based on data length
          width: '100%'
       },
       labels: pieDataLabels,
@@ -49,6 +49,17 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'bar',
             height: '80%',
             width: '100%'
+      },
+      plotOptions: {
+         bar: {
+            horizontal: true,
+            columnWidth: "100%",
+            borderRadiusApplication: "end",
+            borderRadius: 6,
+            dataLabels: {
+               position: "top",
+            },
+         },
       },
       colors: ['#FF4560', '#008FFB', '#00E396', '#775DD0'],
       xaxis: {
