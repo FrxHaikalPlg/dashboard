@@ -111,10 +111,8 @@ class ExcelDataController extends Controller
         }, ARRAY_FILTER_USE_KEY);
 
         // Menangani pemilihan kolom untuk bar chart
-        $selectedBarColumn = 'E'; // Fixed to "Role"
 
         // Membaca data dari kolom "Role" untuk bar chart
-        $barData = $this->readColumnData('E');
 
         // Integrate EmployeeController logic
         $generations = [
@@ -134,7 +132,15 @@ class ExcelDataController extends Controller
         foreach ($cellIterator as $cell) {
             if (strtolower(trim($cell->getValue())) === 'tanggal lahir') {
                 $tanggalLahirColumn = $cell->getColumn();
-                break;
+            }
+            elseif(strtolower(trim($cell->getValue())) === 'role'){
+                $barColumn = $cell->getColumn();
+                $barData = $this->readColumnData($barColumn);
+            }
+            elseif(strtolower(trim($cell->getValue())) === 'jenis kelamin'){
+                $jenisKelaminColumn = $cell->getColumn();
+                $jenisKelaminData = $this->readColumnData($jenisKelaminColumn);
+
             }
         }
 
@@ -157,7 +163,6 @@ class ExcelDataController extends Controller
         }
 
         // Read "Jenis Kelamin" data
-        $jenisKelaminData = $this->readColumnData('L'); // Assuming 'L' is the column for "Jenis Kelamin"
 
         // Combine and return view
         return view('welcome', [
@@ -208,21 +213,7 @@ class ExcelDataController extends Controller
         return count($uniqueValues);
     }
 
-    public function getChartData(Request $request)
-    {
-        $pieColumn = $request->input('pie_column');
-        $barColumn = $request->input('bar_column');
-
-        $pieData = $this->readColumnData($pieColumn);
-        $barData = $this->readColumnData($barColumn);
-
-        return response()->json([
-            'pieDataLabels' => array_keys($pieData),
-            'pieDataCounts' => array_values($pieData),
-            'barDataLabels' => array_keys($barData),
-            'barDataCounts' => array_values($barData)
-        ]);
-    }
+   
 
     public function uploadFile(Request $request)
     {
