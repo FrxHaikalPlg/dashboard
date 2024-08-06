@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Arr;
 
 class ExcelDataController extends Controller
 {
@@ -25,10 +26,11 @@ class ExcelDataController extends Controller
 
     public function index(Request $request)
     {
+        $city = $request->query('city'); // Mengambil kota dari query parameter
         $cities = $this->fetchCities();
-        $generations = $this->calculateGenerations();
-        $barData = $this->fetchBarData();
-        $jenisKelaminData = $this->fetchJenisKelaminData();
+        $generations = $this->calculateGenerations($city);
+        $barData = $this->fetchBarData($city);
+        $jenisKelaminData = $this->fetchJenisKelaminData($city);
 
         return view('welcome', [
             'barDataLabels' => $barData ? array_keys($barData) : [],
@@ -37,6 +39,7 @@ class ExcelDataController extends Controller
             'cities' => $cities,
             'jenisKelaminLabels' => $jenisKelaminData ? array_keys($jenisKelaminData) : [],
             'jenisKelaminCounts' => $jenisKelaminData ? array_values($jenisKelaminData) : [],
+            'selectedCity' => $city,
             'error' => $error ?? null
         ]);
     }
@@ -44,60 +47,68 @@ class ExcelDataController extends Controller
     private function fetchCities()
     {
         $unitKerjaToCityMap = $this->getUnitKerjaToCityMap();
-        $unitKerjaColumn = $this->findColumn('unit kerja');
-        $cities = [];
-
-        foreach ($this->worksheet->getRowIterator(2) as $row) {
-            $cellCoordinate = $unitKerjaColumn . $row->getRowIndex();
-            $unitKerja = $this->worksheet->getCell($cellCoordinate)->getValue();
-            if (isset($unitKerjaToCityMap[$unitKerja])) {
-                $city = $unitKerjaToCityMap[$unitKerja];
-                if (!in_array($city, $cities)) {
-                    $cities[] = $city;
-                }
-            }
-        }
-        return $cities;
+        return array_keys($unitKerjaToCityMap);
     }
 
     private function getUnitKerjaToCityMap()
     {
         return [
-            "KACAB BANDAR LAMPUNG" => "BANDAR LAMPUNG",
-            "KACAB BENGKULU" => "BENGKULU",
-            "KACAB JAMBI" => "JAMBI",
-            "KACAB LAMPUNG TENGAH" => "LAMPUNG TENGAH",
-            "KACAB MUARA ENIM" => "MUARA ENIM",
-            "KACAB MUARO BUNGO" => "MUARO BUNGO",
-            "KACAB PALEMBANG" => "PALEMBANG",
-            "KACAB PANGKAL PINANG" => "PANGKAL PINANG",
-            "KANWIL SUMBAGSEL" => "KANWIL",
-            "KCP BANYUASIN PANGKALAN BALAI" => "PALEMBANG",
-            "KCP BATANGHARI MUARA BULIAN" => "JAMBI",
-            "KCP BELITUNG TANJUNG PANDAN" => "PANGKAL PINANG",
-            "KCP CABANG ARGA MAKMUR" => "BENGKULU",
-            "KCP KOTA METRO NASUTION" => "BANDAR LAMPUNG",
-            "KCP LAHAT PASAR LAMA" => "MUARA ENIM",
-            "KCP LAMPUNG SELATAN KALIANDA" => "BANDAR LAMPUNG",
-            "KCP LAMPUNG UTARA KOTABUMI" => "LAMPUNG TENGAH",
-            "KCP LUBUK LINGGAU YOS SUDARSO" => "MUARA ENIM",
-            "KCP MERANGIN BANGKO" => "MUARO BUNGO",
-            "KCP MUARO JAMBI SENGETI" => "JAMBI",
-            "KCP OGAN KOMERING ULU BATURAJA TIMUR" => "MUARA ENIM",
-            "KCP PRABUMULIH SUDIRMAN" => "MUARA ENIM",
-            "KCP PRINGSEWU SUDIRMAN" => "BANDAR LAMPUNG",
-            "KCP REJANG LEBONG CURUP" => "BENGKULU",
-            "KCP SAROLANGUN LINTAS SUMATERA" => "MUARO BUNGO",
-            "KCP SUNGAI PENUH YOS SUDARSO" => "MUARO BUNGO",
-            "KCP TANJUNG JABUNG BARAT KUALA TUNGKAL" => "JAMBI",
-            "KCP TEBO LINTAS" => "MUARO BUNGO",
-            "KCP TULANG BAWANG BANJAR AGUNG" => "LAMPUNG TENGAH",
+            "BANDAR LAMPUNG" => [
+                "KACAB BANDAR LAMPUNG",
+                "KCP KOTA METRO NASUTION",
+                "KCP LAMPUNG SELATAN KALIANDA",
+                "KCP PRINGSEWU SUDIRMAN"
+            ],
+            "BENGKULU" => [
+                "KACAB BENGKULU",
+                "KCP CABANG ARGA MAKMUR",
+                "KCP REJANG LEBONG CURUP"
+            ],
+            "JAMBI" => [
+                "KACAB JAMBI",
+                "KCP BATANGHARI MUARA BULIAN",
+                "KCP MUARO JAMBI SENGETI",
+                "KCP TANJUNG JABUNG BARAT KUALA TUNGKAL"
+            ],
+            "LAMPUNG TENGAH" => [
+                "KACAB LAMPUNG TENGAH",
+                "KCP LAMPUNG UTARA KOTABUMI",
+                "KCP TULANG BAWANG BANJAR AGUNG"
+            ],
+            "MUARA ENIM" => [
+                "KACAB MUARA ENIM",
+                "KCP LAHAT PASAR LAMA",
+                "KCP LUBUK LINGGAU YOS SUDARSO",
+                "KCP OGAN KOMERING ULU BATURAJA TIMUR",
+                "KCP PRABUMULIH SUDIRMAN"
+            ],
+            "MUARO BUNGO" => [
+                "KACAB MUARO BUNGO",
+                "KCP MERANGIN BANGKO",
+                "KCP SAROLANGUN LINTAS SUMATERA",
+                "KCP SUNGAI PENUH YOS SUDARSO",
+                "KCP TEBO LINTAS"
+            ],
+            "PALEMBANG" => [
+                "KACAB PALEMBANG",
+                "KCP BANYUASIN PANGKALAN BALAI"
+            ],
+            "PANGKAL PINANG" => [
+                "KACAB PANGKAL PINANG",
+                "KCP BELITUNG TANJUNG PANDAN"
+            ],
+            "KANWIL" => [
+                "KANWIL SUMBAGSEL"
+            ]
         ];
     }
 
-    private function calculateGenerations()
+    private function calculateGenerations($city = null)
     {
+        $unitKerjaToCityMap = $this->getUnitKerjaToCityMap();
+        $unitKerjas = $city ? $unitKerjaToCityMap[$city] : Arr::flatten($unitKerjaToCityMap);
         $tanggalLahirColumn = $this->findColumn('tanggal lahir');
+        $unitKerjaColumn = $this->findColumn('unit kerja'); // Menemukan kolom unit kerja di luar loop
         $generations = [
             'Baby Boomer' => 0,
             'Gen X' => 0,
@@ -108,7 +119,9 @@ class ExcelDataController extends Controller
         foreach ($this->worksheet->getRowIterator(2) as $row) {
             $cellCoordinate = $tanggalLahirColumn . $row->getRowIndex();
             $cellValue = $this->worksheet->getCell($cellCoordinate)->getValue();
-            if ($cellValue && ExcelDate::isDateTime($this->worksheet->getCell($cellCoordinate))) {
+            $unitKerjaCoordinate = $unitKerjaColumn . $row->getRowIndex(); // Menggunakan kolom unit kerja yang ditemukan
+            $unitKerja = $this->worksheet->getCell($unitKerjaCoordinate)->getValue();
+            if (in_array($unitKerja, $unitKerjas) && $cellValue && ExcelDate::isDateTime($this->worksheet->getCell($cellCoordinate))) {
                 $tanggalLahir = ExcelDate::excelToDateTimeObject($cellValue)->format('Y-m-d');
                 $year = date('Y', strtotime($tanggalLahir));
                 if ($year <= 1964) $generations['Baby Boomer']++;
@@ -120,16 +133,50 @@ class ExcelDataController extends Controller
         return $generations;
     }
 
-    private function fetchBarData()
+    private function fetchBarData($city = null)
     {
+        $unitKerjaToCityMap = $this->getUnitKerjaToCityMap();
+        $unitKerjas = $city ? $unitKerjaToCityMap[$city] : Arr::flatten($unitKerjaToCityMap);
         $selectedBarColumn = $this->findColumn('role');
-        return $this->readColumnData($selectedBarColumn);
+        $unitKerjaColumn = $this->findColumn('unit kerja'); // Menemukan kolom unit kerja
+        $barData = [];
+
+        foreach ($this->worksheet->getRowIterator(2) as $row) {
+            $cellCoordinate = $selectedBarColumn . $row->getRowIndex();
+            $value = $this->worksheet->getCell($cellCoordinate)->getValue();
+            $unitKerjaCoordinate = $unitKerjaColumn . $row->getRowIndex(); // Menggunakan kolom unit kerja yang ditemukan
+            $unitKerja = $this->worksheet->getCell($unitKerjaCoordinate)->getValue();
+            if (in_array($unitKerja, $unitKerjas) && $value !== null && $value !== '') {
+                if (!isset($barData[$value])) {
+                    $barData[$value] = 0;
+                }
+                $barData[$value]++;
+            }
+        }
+        return $barData;
     }
 
-    private function fetchJenisKelaminData()
+    private function fetchJenisKelaminData($city = null)
     {
+        $unitKerjaToCityMap = $this->getUnitKerjaToCityMap();
+        $unitKerjas = $city ? $unitKerjaToCityMap[$city] : Arr::flatten($unitKerjaToCityMap);
         $jenisKelaminColumn = $this->findColumn('jenis kelamin');
-        return $this->readColumnData($jenisKelaminColumn);
+        $unitKerjaColumn = $this->findColumn('unit kerja'); // Menemukan kolom unit kerja
+        $jenisKelaminData = [];
+
+        foreach ($this->worksheet->getRowIterator(2) as $row) {
+            $cellCoordinate = $jenisKelaminColumn . $row->getRowIndex();
+            $value = $this->worksheet->getCell($cellCoordinate)->getValue();
+            $unitKerjaCoordinate = $unitKerjaColumn . $row->getRowIndex(); // Menggunakan kolom unit kerja yang ditemukan
+            $unitKerja = $this->worksheet->getCell($unitKerjaCoordinate)->getValue();
+            if (in_array($unitKerja, $unitKerjas) && $value !== null && $value !== '') {
+                if (!isset($jenisKelaminData[$value])) {
+                    $jenisKelaminData[$value] = 0;
+                }
+                $jenisKelaminData[$value]++;
+            }
+        }
+        return $jenisKelaminData;
     }
 
     private function findColumn($columnName)
