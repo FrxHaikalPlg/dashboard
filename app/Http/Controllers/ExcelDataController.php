@@ -111,10 +111,10 @@ class ExcelDataController extends Controller
         }, ARRAY_FILTER_USE_KEY);
 
         // Menangani pemilihan kolom untuk bar chart
-        $selectedBarColumn = $request->input('bar_column', array_keys($filteredColumns)[0] ?? null);
+        $selectedBarColumn = 'E'; // Fixed to "Role"
 
-        // Membaca data dari kolom yang dipilih untuk bar chart
-        $barData = $this->readColumnData($selectedBarColumn);
+        // Membaca data dari kolom "Role" untuk bar chart
+        $barData = $this->readColumnData('E');
 
         // Integrate EmployeeController logic
         $generations = [

@@ -25,29 +25,25 @@
    <main class="flex-1 p-4 md:ml-64 h-auto pt-10 overflow-y-auto">
       
    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-         <div class="rounded-lg  h-auto md:h-auto flex flex-col max-h-96 bg-white dark:bg-gray-800 overflow-x-auto">
-            <form action="{{ route('excel.data') }}" method="GET" class="p-4">
-               <div>
-                  <select name="bar_column" id="bar_column" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                     @foreach($columns as $key => $value)
-                        <option value="{{ $key }}" {{ $selectedBarColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
-                     @endforeach
-                  </select>
-               </div>
-            </form>
+         <div class="rounded-lg h-auto shadow md:h-auto flex flex-col max-h-96 bg-white dark:bg-gray-800 overflow-x-auto">
+            <div class="flex justify-center items-center p-4">
+               <div class="flex justify-center items-center mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
+                  <h5 class="text-xl leading-none text-gray-900 dark:text-white pe-1">Role</h5>
+               </div>   
+            </div>
             <div id="bar-chart" class="flex-1 m-0 p-0 relative w-auto"></div>
          </div>
          
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-         <div class="rounded-lg h-64 md:h-96 flex flex-col bg-white dark:bg-gray-800">
+         <div class="rounded-lg h-64 shadow md:h-96 flex flex-col bg-white dark:bg-gray-800">
             <div class="flex justify-center items-center p-4">
-               <div class="flex justify-center items-center mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
+               <div class="flex justify-center shadow items-center mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
                   <h5 class="text-xl leading-none text-gray-900 dark:text-white pe-1">Jenis Kelamin</h5>
                </div>   
             </div>
             <div id="pie-chart" class="flex-1 m-0 p-0 relative"></div>
          </div>
-         <div class="rounded-lg h-64 md:h-96 flex flex-col max-h-96 bg-white dark:bg-gray-800">
+         <div class="rounded-lg h-64 shadow md:h-96 flex flex-col max-h-96 bg-white dark:bg-gray-800">
             <div class="flex justify-center items-center p-4">
                <div class="flex justify-center items-center mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
                   <h5 class="text-xl leading-none text-gray-900 dark:text-white pe-1">Generasi</h5>
@@ -58,7 +54,7 @@
       </div>
    </div>
 
-      <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-96 mb-4 bg-white dark:bg-gray-800"></div>
+      <div class="border-2 border-dashed rounded-lg shadow border-gray-300 dark:border-gray-600 h-96 mb-4 bg-white dark:bg-gray-800"></div>
    </main>
    
 

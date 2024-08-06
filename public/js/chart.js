@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
    }
 
+   // Chart Jenis Kelamin
    var pieOptions = {
       series: pieDataCounts,
       chart: {
@@ -26,14 +27,31 @@ document.addEventListener('DOMContentLoaded', function () {
          width: '100%'
       },
       stroke: {
-         width: 1, // Lebar garis tepi
-         colors: ['#000000'] // Warna garis tepi, #000000 adalah kode warna untuk hitam
+         colors: ["white"],
+         lineCap: "",
       },
+      plotOptions: {
+         pie: {
+           labels: {
+             show: true,
+           },
+           size: "100%",
+           dataLabels: {
+             offset: -25
+           }
+         },
+       },
       labels: pieDataLabels,
-      colors: ['#4C3BCF', '#3DC2EC'], // Warna untuk Wanita (pink) dan Laki-laki (biru)
+      dataLabels: {
+         enabled: true,
+         style: {
+         fontFamily: "Inter, sans-serif",
+         },
+      },
+      colors: ['#99154B', '#1E429F'], // Warna untuk Wanita (pink) dan Laki-laki (biru)
       legend: {
-         position: 'bottom', // Pindahkan posisi legenda ke bawah
-         width: '20%', // Atur lebar legenda menjadi 20% dari ukuran pie chart
+         position: "bottom",
+         fontFamily: "Inter, sans-serif",
          formatter: function(seriesName, opts) {
             return seriesName + ": " + opts.w.globals.series[opts.seriesIndex];
          },
@@ -57,32 +75,44 @@ document.addEventListener('DOMContentLoaded', function () {
       }]
    };
 
+   // Bar Chart
    var barOptions = {
       series: [{
             name: 'Data',
             data: barDataCounts
       }],
       chart: {
-            type: 'bar',
-            height: '80%',
-            width: '100%'
-      },
-      plotOptions: {
-         bar: {
-            horizontal: true,
-            columnWidth: "100%",
-            borderRadiusApplication: "end",
-            borderRadius: 6,
-            dataLabels: {
-               position: "top",
-            },
-            stroke: {
-               width: 1, // Lebar garis tepi
-               colors: ['#000000'] // Warna garis tepi, #000000 adalah kode warna untuk hitam
-            }
+         sparkline: {
+           enabled: false,
          },
-      },
-      
+         type: "bar",
+         width: "100%",
+         height: 400,
+         toolbar: {
+           show: false,
+         }
+       },
+       fill: {
+         opacity: 1,
+       },
+       plotOptions: {
+         bar: {
+           horizontal: true,
+           columnWidth: "100%",
+           borderRadiusApplication: "end",
+           borderRadius: 6,
+           dataLabels: {
+             position: "top",
+           },
+         },
+       },
+       legend: {
+         show: true,
+         position: "bottom",
+       },
+       dataLabels: {
+         enabled: false,
+       },
       colors: ['#FF4560', '#008FFB', '#00E396', '#775DD0'],
       xaxis: {
             categories: barDataLabels,
@@ -101,6 +131,18 @@ document.addEventListener('DOMContentLoaded', function () {
                }
             }
       },
+      grid: {
+         show: true,
+         strokeDashArray: 4,
+         padding: {
+           left: 2,
+           right: 2,
+           top: -20
+         },
+       },
+       fill: {
+         opacity: 1,
+       },
       responsive: [{
             breakpoint: 480,
             options: {
@@ -116,19 +158,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
    var generationOptions = {
       series: filteredGenerationData,
+      colors: ['#9F580A', '#057A55', '#4F1787', '#180161'], // Warna untuk Gen X (merah), Gen Y (kuning), Gen Z (hijau), dan Baby Boomer (ungu)
       chart: {
          type: 'pie',
-         height: '80%', // Sesuaikan tinggi agar tidak keluar dari container
+         height: '80%', // Adjust height based on data length
          width: '100%'
       },
-      stroke: {
-         width: 1, // Lebar garis tepi
-         colors: ['#000000'] // Warna garis tepi, #000000 adalah kode warna untuk hitam
-      },
+       stroke: {
+         colors: ["white"],
+         lineCap: "",
+       },
+       plotOptions: {
+         pie: {
+           labels: {
+             show: true,
+           },
+           size: "100%",
+           dataLabels: {
+             offset: -25
+           }
+         },
+       },
       labels: filteredGenerationLabels,
-      colors: ['#EB3678', '#FB773C', '#4F1787', '#180161'], // Warna untuk Gen X (merah), Gen Y (kuning), Gen Z (hijau), dan Baby Boomer (ungu)
+      dataLabels: {
+         enabled: true,
+         style: {
+           fontFamily: "Inter, sans-serif",
+         },
+       },
       legend: {
-         position: 'bottom', // Pindahkan posisi legenda ke bawah
+         position: "bottom",
+         fontFamily: "Inter, sans-serif",
          formatter: function(seriesName, opts) {
             // Hanya tampilkan legend yang memiliki data
             if (opts.w.globals.series[opts.seriesIndex] > 0) {
