@@ -17,4 +17,4 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-/storage/
+/storage/app/public/tes_data.xlsx

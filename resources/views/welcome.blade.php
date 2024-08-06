@@ -24,27 +24,10 @@
    <!-- Content -->
    <main class="flex-1 p-4 md:ml-64 h-auto pt-10 overflow-y-auto">
       
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-
-         <div class="border-2 border-dashed border-gray-300 rounded-lg dark:border-gray-600 h-64 md:h-96 flex flex-col bg-white dark:bg-gray-800">
+   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+         <div class="rounded-lg  h-auto md:h-auto flex flex-col max-h-96 bg-white dark:bg-gray-800 overflow-x-auto">
             <form action="{{ route('excel.data') }}" method="GET" class="p-4">
                <div>
-                  <label for="pie_column" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pie Chart Column:</label>
-                  <select name="pie_column" id="pie_column" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                     @foreach($columns as $key => $value)
-                        <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ strlen($value) > 15 ? substr($value, 0, 15) . '...' : $value }}</option>
-                     @endforeach
-                  </select>
-                  <input type="hidden" name="bar_column" value="{{ $selectedBarColumn }}">
-               </div>
-            </form>
-            <div id="pie-chart" class="flex-1 overflow-hidden m-0 p-0 relative"></div>
-         </div>
-
-         <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-64 md:h-96 flex flex-col max-h-96 bg-white dark:bg-gray-800">
-            <form action="{{ route('excel.data') }}" method="GET" class="p-4">
-               <div>
-                  <label for="bar_column" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bar Chart Column:</label>
                   <select name="bar_column" id="bar_column" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                      @foreach($columns as $key => $value)
                         <option value="{{ $key }}" {{ $selectedBarColumn == $key ? 'selected' : '' }}>{{ $value }}</option>
@@ -53,22 +36,45 @@
                   <input type="hidden" name="pie_column" value="{{ $selectedPieColumn }}">
                </div>
             </form>
-            <div id="bar-chart" class="flex-1 overflow-hidden m-0 p-0 relative"></div>
+            <div id="bar-chart" class="flex-1 m-0 p-0 relative w-auto"></div>
          </div>
-         <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-64 md:h-96 flex flex-col max-h-96 bg-white dark:bg-gray-800"></div>
-         <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-64 md:h-96 flex flex-col max-h-96 bg-white dark:bg-gray-800"></div>
+         
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+         <div class="rounded-lg h-64 md:h-96 flex flex-col bg-white dark:bg-gray-800">
+            <form action="{{ route('excel.data') }}" method="GET" class="p-4">
+               <div>
+                  <select name="pie_column" id="pie_column" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                     @foreach($columns as $key => $value)
+                        <option value="{{ $key }}" {{ $selectedPieColumn == $key ? 'selected' : '' }}>{{ strlen($value) > 15 ? substr($value, 0, 15) . '...' : $value }}</option>
+                     @endforeach
+                  </select>
+                  <input type="hidden" name="bar_column" value="{{ $selectedBarColumn }}">
+               </div>
+            </form>
+            <div id="pie-chart" class="flex-1 m-0 p-0 relative"></div>
+         </div>
+         <div class="rounded-lg h-64 md:h-96 flex flex-col max-h-96 bg-white dark:bg-gray-800">
+            <div class="flex justify-center items-center p-4">
+               <div class="flex justify-center items-center mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
+                  <h5 class="text-xl leading-none text-gray-900 dark:text-white pe-1">Generasi</h5>
+               </div>   
+            </div>
+            <div id="generationChart" class="flex-1 m-0 p-0 relative"></div>
+         </div>
       </div>
+   </div>
+
       <div class="border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-600 h-96 mb-4 bg-white dark:bg-gray-800"></div>
    </main>
-   </div>
+   
 
    <!-- Hidden elements to store JSON data -->
    <div id="pieDataCounts" class="hidden">@json($pieDataCounts)</div>
    <div id="pieDataLabels" class="hidden">@json($pieDataLabels)</div>
    <div id="barDataCounts" class="hidden">@json($barDataCounts)</div>
    <div id="barDataLabels" class="hidden">@json($barDataLabels)</div>
-
-
+   <div id="generationData" class="hidden">@json(array_values($generations))</div>
+   <div id="generationLabels" class="hidden">@json(array_keys($generations))</div>
 
    <!-- Modal -->
    <div id="popup-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
