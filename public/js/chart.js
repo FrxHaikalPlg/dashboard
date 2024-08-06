@@ -25,8 +25,12 @@ document.addEventListener('DOMContentLoaded', function () {
          height: '80%', // Adjust height based on data length
          width: '100%'
       },
+      stroke: {
+         width: 1, // Lebar garis tepi
+         colors: ['#000000'] // Warna garis tepi, #000000 adalah kode warna untuk hitam
+      },
       labels: pieDataLabels,
-      colors: ['#FFC0CB', '#0000FF'], // Warna untuk Wanita (pink) dan Laki-laki (biru)
+      colors: ['#4C3BCF', '#3DC2EC'], // Warna untuk Wanita (pink) dan Laki-laki (biru)
       legend: {
          position: 'bottom', // Pindahkan posisi legenda ke bawah
          width: '20%', // Atur lebar legenda menjadi 20% dari ukuran pie chart
@@ -72,8 +76,13 @@ document.addEventListener('DOMContentLoaded', function () {
             dataLabels: {
                position: "top",
             },
+            stroke: {
+               width: 1, // Lebar garis tepi
+               colors: ['#000000'] // Warna garis tepi, #000000 adalah kode warna untuk hitam
+            }
          },
       },
+      
       colors: ['#FF4560', '#008FFB', '#00E396', '#775DD0'],
       xaxis: {
             categories: barDataLabels,
@@ -112,8 +121,12 @@ document.addEventListener('DOMContentLoaded', function () {
          height: '80%', // Sesuaikan tinggi agar tidak keluar dari container
          width: '100%'
       },
+      stroke: {
+         width: 1, // Lebar garis tepi
+         colors: ['#000000'] // Warna garis tepi, #000000 adalah kode warna untuk hitam
+      },
       labels: filteredGenerationLabels,
-      colors: ['#FF0000', '#FFFF00', '#00E396', '#775DD0'], // Warna untuk Gen X (merah), Gen Y (kuning), Gen Z (hijau), dan Baby Boomer (ungu)
+      colors: ['#EB3678', '#FB773C', '#4F1787', '#180161'], // Warna untuk Gen X (merah), Gen Y (kuning), Gen Z (hijau), dan Baby Boomer (ungu)
       legend: {
          position: 'bottom', // Pindahkan posisi legenda ke bawah
          formatter: function(seriesName, opts) {
