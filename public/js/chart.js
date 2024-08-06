@@ -1,8 +1,8 @@
 var pieChart, barChart, generationChart; // Mendefinisikan variabel di luar untuk akses global
 
 document.addEventListener('DOMContentLoaded', function () {
-   var pieDataCounts = JSON.parse(document.getElementById('pieDataCounts').textContent);
-   var pieDataLabels = JSON.parse(document.getElementById('pieDataLabels').textContent);
+   var pieDataCounts = JSON.parse(document.getElementById('jenisKelaminCounts').textContent);
+   var pieDataLabels = JSON.parse(document.getElementById('jenisKelaminLabels').textContent);
    var barDataCounts = JSON.parse(document.getElementById('barDataCounts').textContent);
    var barDataLabels = JSON.parse(document.getElementById('barDataLabels').textContent);
    var generationData = JSON.parse(document.getElementById('generationData').textContent);
@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
          width: '100%'
       },
       labels: pieDataLabels,
+      colors: ['#FFC0CB', '#0000FF'], // Warna untuk Wanita (pink) dan Laki-laki (biru)
       legend: {
          position: 'bottom', // Pindahkan posisi legenda ke bawah
          width: '20%', // Atur lebar legenda menjadi 20% dari ukuran pie chart
@@ -112,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
          width: '100%'
       },
       labels: filteredGenerationLabels,
+      colors: ['#FF0000', '#FFFF00', '#00E396', '#775DD0'], // Warna untuk Gen X (merah), Gen Y (kuning), Gen Z (hijau), dan Baby Boomer (ungu)
       legend: {
          position: 'bottom', // Pindahkan posisi legenda ke bawah
          formatter: function(seriesName, opts) {
@@ -148,27 +150,17 @@ document.addEventListener('DOMContentLoaded', function () {
    generationChart.render();
 });
 
-document.getElementById('pie_column').addEventListener('change', function() {
-   updateChartData('pie');
-});
-
 document.getElementById('bar_column').addEventListener('change', function() {
    updateChartData('bar');
 });
 
 function updateChartData(chartType) {
-   var pieColumn = document.getElementById('pie_column').value;
    var barColumn = document.getElementById('bar_column').value;
 
-   fetch(`/api/chart-data?pie_column=${pieColumn}&bar_column=${barColumn}`)
+   fetch(`/api/chart-data?bar_column=${barColumn}`)
       .then(response => response.json())
       .then(data => {
-            if (chartType === 'pie') {
-               pieChart.updateOptions({
-                  series: data.pieDataCounts,
-                  labels: data.pieDataLabels
-               });
-            } else {
+            if (chartType === 'bar') {
                barChart.updateOptions({
                   series: [{ data: data.barDataCounts }],
                   xaxis: { categories: data.barDataLabels }

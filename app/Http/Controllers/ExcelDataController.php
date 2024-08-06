@@ -110,12 +110,10 @@ class ExcelDataController extends Controller
             return $columnDataCounts[$key] <= $maxUniqueValues;
         }, ARRAY_FILTER_USE_KEY);
 
-        // Menangani pemilihan kolom untuk pie chart dan bar chart
-        $selectedPieColumn = $request->input('pie_column', array_keys($filteredColumns)[0] ?? null);
+        // Menangani pemilihan kolom untuk bar chart
         $selectedBarColumn = $request->input('bar_column', array_keys($filteredColumns)[0] ?? null);
 
-        // Membaca data dari kolom yang dipilih untuk pie chart dan bar chart
-        $pieData = $this->readColumnData($selectedPieColumn);
+        // Membaca data dari kolom yang dipilih untuk bar chart
         $barData = $this->readColumnData($selectedBarColumn);
 
         // Integrate EmployeeController logic
@@ -158,18 +156,20 @@ class ExcelDataController extends Controller
             }
         }
 
+        // Read "Jenis Kelamin" data
+        $jenisKelaminData = $this->readColumnData('L'); // Assuming 'L' is the column for "Jenis Kelamin"
+
         // Combine and return view
         return view('welcome', [
             'columns' => $filteredColumns,
-            'selectedPieColumn' => $selectedPieColumn,
             'selectedBarColumn' => $selectedBarColumn,
-            'pieDataLabels' => $pieData ? array_keys($pieData) : [],
-            'pieDataCounts' => $pieData ? array_values($pieData) : [],
             'barDataLabels' => $barData ? array_keys($barData) : [],
             'barDataCounts' => $barData ? array_values($barData) : [],
             'generations' => $generations,
             'tanggalLahirList' => $tanggalLahirList,
             'cities' => $cities,
+            'jenisKelaminLabels' => $jenisKelaminData ? array_keys($jenisKelaminData) : [],
+            'jenisKelaminCounts' => $jenisKelaminData ? array_values($jenisKelaminData) : [],
             'error' => $error ?? null
         ]);
     }
