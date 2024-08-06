@@ -20,7 +20,7 @@
    <div class="antialiased bg-gray-50 dark:bg-gray-900 flex flex-1">
       
    <!-- Sidebar -->
-   <x-sidebar></x-sidebar>
+   <x-sidebar :cities="$cities" />   <!-- Content -->
    <!-- Content -->
    <main class="flex-1 p-4 md:ml-64 h-auto pt-10 overflow-y-auto">
       
