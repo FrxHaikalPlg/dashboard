@@ -31,6 +31,16 @@ class ExcelDataController extends Controller
         $generations = $this->calculateGenerations($city);
         $barData = $this->fetchBarData($city);
         $jenisKelaminData = $this->fetchJenisKelaminData($city);
+        $excelData = [];
+        $columnNames = [];
+        $error = null;
+
+        try {
+            $excelData = $this->fetchExcelData($city);
+            $columnNames = $this->getColumnNames();
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
+        }
 
         return view('welcome', [
             'barDataLabels' => $barData ? array_keys($barData) : [],
@@ -40,7 +50,9 @@ class ExcelDataController extends Controller
             'jenisKelaminLabels' => $jenisKelaminData ? array_keys($jenisKelaminData) : [],
             'jenisKelaminCounts' => $jenisKelaminData ? array_values($jenisKelaminData) : [],
             'selectedCity' => $city,
-            'error' => $error ?? null
+            'excelData' => $excelData,
+            'columnNames' => $columnNames,
+            'error' => $error
         ]);
     }
 
@@ -177,6 +189,38 @@ class ExcelDataController extends Controller
             }
         }
         return $jenisKelaminData;
+    }
+
+    private function fetchExcelData($city = null)
+    {
+        $unitKerjaToCityMap = $this->getUnitKerjaToCityMap();
+        $unitKerjas = $city ? $unitKerjaToCityMap[$city] : Arr::flatten($unitKerjaToCityMap);
+        $data = [];
+
+        foreach ($this->worksheet->getRowIterator(2) as $row) {
+            $rowIndex = $row->getRowIndex();
+            $unitKerja = $this->worksheet->getCell($this->findColumn('unit kerja') . $rowIndex)->getValue();
+            if (in_array($unitKerja, $unitKerjas)) {
+                $rowData = [];
+                foreach ($this->getColumnNames() as $columnName) {
+                    $rowData[$columnName] = $this->worksheet->getCell($this->findColumn($columnName) . $rowIndex)->getValue();
+                }
+                $data[] = $rowData;
+            }
+        }
+        return $data;
+    }
+
+    private function getColumnNames()
+    {
+        $firstRow = $this->worksheet->getRowIterator(1)->current();
+        $cellIterator = $firstRow->getCellIterator();
+        $cellIterator->setIterateOnlyExistingCells(true);
+        $columnNames = [];
+        foreach ($cellIterator as $cell) {
+            $columnNames[] = $cell->getValue();
+        }
+        return $columnNames;
     }
 
     private function findColumn($columnName)

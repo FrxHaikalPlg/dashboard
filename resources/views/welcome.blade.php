@@ -54,7 +54,31 @@
       </div>
    </div>
 
-      <div class="border-2 border-dashed rounded-lg shadow border-gray-300 dark:border-gray-600 h-96 mb-4 bg-white dark:bg-gray-800"></div>
+      <div class="rounded-lg shadow h-96 mb-4 bg-white dark:bg-gray-800">
+         
+         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        @foreach($columnNames as $columnName)
+                            <th scope="col" class="px-6 py-3">{{ $columnName }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($excelData as $data)
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            @foreach($data as $value)
+                                <td class="px-6 py-4">{{ $value }}</td>
+                            @endforeach
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        
+
+      </div>
    </main>
    
 
