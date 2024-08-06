@@ -93,22 +93,9 @@ class ExcelDataController extends Controller
         }
 
         // Mendapatkan semua nama kolom dari header
-        $headerRow = $this->worksheet->getRowIterator(1)->current();
-        $cellIterator = $headerRow->getCellIterator();
-        $cellIterator->setIterateOnlyExistingCells(true);
-        $columns = [];
-        $columnDataCounts = [];
-        foreach ($cellIterator as $cell) {
-            $column = $cell->getColumn();
-            $columns[$column] = $cell->getValue();
-            $columnDataCounts[$column] = $this->countUniqueValues($column);
-        }
 
-        $maxUniqueValues = 30; // Batas maksimum nilai unik
-        $filteredColumns = array_filter($columns, function ($key) use ($columnDataCounts, $maxUniqueValues) {
-            return $columnDataCounts[$key] <= $maxUniqueValues;
-        }, ARRAY_FILTER_USE_KEY);
 
+       
         $generations = [
             'Baby Boomer' => 0,
             'Gen X' => 0,
@@ -160,7 +147,6 @@ class ExcelDataController extends Controller
 
         // Combine and return view
         return view('welcome', [
-            'columns' => $filteredColumns,
             'selectedBarColumn' => $selectedBarColumn,
             'barDataLabels' => $barData ? array_keys($barData) : [],
             'barDataCounts' => $barData ? array_values($barData) : [],
@@ -187,14 +173,10 @@ class ExcelDataController extends Controller
             }
         }
 
-        if (count($data) > $maxUniqueValues) {
-            return null; // atau bisa juga throw new \Exception("Data exceeds maximum unique values.");
-        }
+        
 
         return $data;
     }
-
-    
 
    
 
