@@ -104,17 +104,11 @@ class ExcelDataController extends Controller
             $columnDataCounts[$column] = $this->countUniqueValues($column);
         }
 
-        // Filter kolom yang memiliki terlalu banyak nilai unik
         $maxUniqueValues = 30; // Batas maksimum nilai unik
         $filteredColumns = array_filter($columns, function ($key) use ($columnDataCounts, $maxUniqueValues) {
             return $columnDataCounts[$key] <= $maxUniqueValues;
         }, ARRAY_FILTER_USE_KEY);
 
-        // Menangani pemilihan kolom untuk bar chart
-
-        // Membaca data dari kolom "Role" untuk bar chart
-
-        // Integrate EmployeeController logic
         $generations = [
             'Baby Boomer' => 0,
             'Gen X' => 0,
@@ -134,8 +128,8 @@ class ExcelDataController extends Controller
                 $tanggalLahirColumn = $cell->getColumn();
             }
             elseif(strtolower(trim($cell->getValue())) === 'role'){
-                $barColumn = $cell->getColumn();
-                $barData = $this->readColumnData($barColumn);
+                $selectedBarColumn = $cell->getColumn();
+                $barData = $this->readColumnData($selectedBarColumn);
             }
             elseif(strtolower(trim($cell->getValue())) === 'jenis kelamin'){
                 $jenisKelaminColumn = $cell->getColumn();
@@ -179,7 +173,7 @@ class ExcelDataController extends Controller
         ]);
     }
 
-    private function readColumnData($column, $maxUniqueValues = 30)
+    private function readColumnData($column)
     {
         $data = [];
         foreach ($this->worksheet->getRowIterator(2) as $row) {
@@ -200,18 +194,7 @@ class ExcelDataController extends Controller
         return $data;
     }
 
-    private function countUniqueValues($column)
-    {
-        $uniqueValues = [];
-        foreach ($this->worksheet->getRowIterator(2) as $row) {
-            $cellCoordinate = $column . $row->getRowIndex();
-            $value = $this->worksheet->getCell($cellCoordinate)->getValue();
-            if (!in_array($value, $uniqueValues)) {
-                $uniqueValues[] = $value;
-            }
-        }
-        return count($uniqueValues);
-    }
+    
 
    
 
