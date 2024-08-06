@@ -25,14 +25,44 @@ class ExcelDataController extends Controller
 
     public function index(Request $request)
     {
-        // Load the spreadsheet
-        $path = storage_path('app/public/tes_data.xlsx');
-        $reader = new Xlsx();
-        $spreadsheet = $reader->load($path);
-        $this->worksheet = $spreadsheet->getActiveSheet();
+        $cities = $this->fetchCities();
+        $generations = $this->calculateGenerations();
+        $barData = $this->fetchBarData();
+        $jenisKelaminData = $this->fetchJenisKelaminData();
 
-        // Define the mapping from 'unit kerja' to cities
-        $unitKerjaToCityMap = [
+        return view('welcome', [
+            'barDataLabels' => $barData ? array_keys($barData) : [],
+            'barDataCounts' => $barData ? array_values($barData) : [],
+            'generations' => $generations,
+            'cities' => $cities,
+            'jenisKelaminLabels' => $jenisKelaminData ? array_keys($jenisKelaminData) : [],
+            'jenisKelaminCounts' => $jenisKelaminData ? array_values($jenisKelaminData) : [],
+            'error' => $error ?? null
+        ]);
+    }
+
+    private function fetchCities()
+    {
+        $unitKerjaToCityMap = $this->getUnitKerjaToCityMap();
+        $unitKerjaColumn = $this->findColumn('unit kerja');
+        $cities = [];
+
+        foreach ($this->worksheet->getRowIterator(2) as $row) {
+            $cellCoordinate = $unitKerjaColumn . $row->getRowIndex();
+            $unitKerja = $this->worksheet->getCell($cellCoordinate)->getValue();
+            if (isset($unitKerjaToCityMap[$unitKerja])) {
+                $city = $unitKerjaToCityMap[$unitKerja];
+                if (!in_array($city, $cities)) {
+                    $cities[] = $city;
+                }
+            }
+        }
+        return $cities;
+    }
+
+    private function getUnitKerjaToCityMap()
+    {
+        return [
             "KACAB BANDAR LAMPUNG" => "BANDAR LAMPUNG",
             "KACAB BENGKULU" => "BENGKULU",
             "KACAB JAMBI" => "JAMBI",
@@ -63,39 +93,11 @@ class ExcelDataController extends Controller
             "KCP TEBO LINTAS" => "MUARO BUNGO",
             "KCP TULANG BAWANG BANJAR AGUNG" => "LAMPUNG TENGAH",
         ];
+    }
 
-        // Find the 'unit kerja' column and fetch cities
-        $unitKerjaColumn = null;
-        $cities = [];
-        $firstRow = $this->worksheet->getRowIterator(1)->current();
-        $cellIterator = $firstRow->getCellIterator();
-        $cellIterator->setIterateOnlyExistingCells(true);
-        foreach ($cellIterator as $cell) {
-            if (strtolower(trim($cell->getValue())) === 'unit kerja') {
-                $unitKerjaColumn = $cell->getColumn();
-                break;
-            }
-        }
-
-        if ($unitKerjaColumn === null) {
-            throw new \Exception("Column 'Unit Kerja' not found in the Excel file.");
-        }
-
-        foreach ($this->worksheet->getRowIterator(2) as $row) {
-            $cellCoordinate = $unitKerjaColumn . $row->getRowIndex();
-            $unitKerja = $this->worksheet->getCell($cellCoordinate)->getValue();
-            if (isset($unitKerjaToCityMap[$unitKerja])) {
-                $city = $unitKerjaToCityMap[$unitKerja];
-                if (!in_array($city, $cities)) {
-                    $cities[] = $city;
-                }
-            }
-        }
-
-        // Mendapatkan semua nama kolom dari header
-
-
-       
+    private function calculateGenerations()
+    {
+        $tanggalLahirColumn = $this->findColumn('tanggal lahir');
         $generations = [
             'Baby Boomer' => 0,
             'Gen X' => 0,
@@ -103,38 +105,11 @@ class ExcelDataController extends Controller
             'Gen Z' => 0,
         ];
 
-        $tanggalLahirList = []; // Array to hold all dates
-        $tanggalLahirColumn = null; // Initialize column for 'tanggal_lahir'
-
-        // Scan the first row to find the 'tanggal_lahir' column
-        $firstRow = $this->worksheet->getRowIterator(1)->current();
-        $cellIterator = $firstRow->getCellIterator();
-        $cellIterator->setIterateOnlyExistingCells(true);
-        foreach ($cellIterator as $cell) {
-            if (strtolower(trim($cell->getValue())) === 'tanggal lahir') {
-                $tanggalLahirColumn = $cell->getColumn();
-            }
-            elseif(strtolower(trim($cell->getValue())) === 'role'){
-                $selectedBarColumn = $cell->getColumn();
-                $barData = $this->readColumnData($selectedBarColumn);
-            }
-            elseif(strtolower(trim($cell->getValue())) === 'jenis kelamin'){
-                $jenisKelaminColumn = $cell->getColumn();
-                $jenisKelaminData = $this->readColumnData($jenisKelaminColumn);
-
-            }
-        }
-
-        if ($tanggalLahirColumn === null) {
-            throw new \Exception("Column 'Tanggal Lahir' not found in the Excel file.");
-        }
-
         foreach ($this->worksheet->getRowIterator(2) as $row) {
             $cellCoordinate = $tanggalLahirColumn . $row->getRowIndex();
             $cellValue = $this->worksheet->getCell($cellCoordinate)->getValue();
             if ($cellValue && ExcelDate::isDateTime($this->worksheet->getCell($cellCoordinate))) {
                 $tanggalLahir = ExcelDate::excelToDateTimeObject($cellValue)->format('Y-m-d');
-                $tanggalLahirList[] = $tanggalLahir;
                 $year = date('Y', strtotime($tanggalLahir));
                 if ($year <= 1964) $generations['Baby Boomer']++;
                 elseif ($year >= 1965 && $year <= 1980) $generations['Gen X']++;
@@ -142,21 +117,32 @@ class ExcelDataController extends Controller
                 elseif ($year >= 1997) $generations['Gen Z']++;
             }
         }
+        return $generations;
+    }
 
-        // Read "Jenis Kelamin" data
+    private function fetchBarData()
+    {
+        $selectedBarColumn = $this->findColumn('role');
+        return $this->readColumnData($selectedBarColumn);
+    }
 
-        // Combine and return view
-        return view('welcome', [
-            'selectedBarColumn' => $selectedBarColumn,
-            'barDataLabels' => $barData ? array_keys($barData) : [],
-            'barDataCounts' => $barData ? array_values($barData) : [],
-            'generations' => $generations,
-            'tanggalLahirList' => $tanggalLahirList,
-            'cities' => $cities,
-            'jenisKelaminLabels' => $jenisKelaminData ? array_keys($jenisKelaminData) : [],
-            'jenisKelaminCounts' => $jenisKelaminData ? array_values($jenisKelaminData) : [],
-            'error' => $error ?? null
-        ]);
+    private function fetchJenisKelaminData()
+    {
+        $jenisKelaminColumn = $this->findColumn('jenis kelamin');
+        return $this->readColumnData($jenisKelaminColumn);
+    }
+
+    private function findColumn($columnName)
+    {
+        $firstRow = $this->worksheet->getRowIterator(1)->current();
+        $cellIterator = $firstRow->getCellIterator();
+        $cellIterator->setIterateOnlyExistingCells(true);
+        foreach ($cellIterator as $cell) {
+            if (strtolower(trim($cell->getValue())) === strtolower($columnName)) {
+                return $cell->getColumn();
+            }
+        }
+        throw new \Exception("Column '$columnName' not found in the Excel file.");
     }
 
     private function readColumnData($column)
@@ -172,13 +158,8 @@ class ExcelDataController extends Controller
                 $data[$value]++;
             }
         }
-
-        
-
         return $data;
     }
-
-   
 
     public function uploadFile(Request $request)
     {
