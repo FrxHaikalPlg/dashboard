@@ -175,15 +175,19 @@ class ExcelDataController extends Controller
 {
     $unitKerjaToCityMap = $this->getUnitKerjaToCityMap();
     $unitKerjas = $city ? $unitKerjaToCityMap[$city] : Arr::flatten($unitKerjaToCityMap);
-    $jabatanColumn = $this->findColumn('jabatan');
+    $jabatanColumn = $this->findColumn('jabatan'); // Mengganti 'role' dengan 'jabatan'
+    $unitKerjaColumn = $this->findColumn('unit kerja');
     $barData = [];
 
     foreach ($this->worksheet->getRowIterator(2) as $row) {
         $cellCoordinate = $jabatanColumn . $row->getRowIndex();
         $jabatan = $this->worksheet->getCell($cellCoordinate)->getValue();
-        if ($jabatan !== null && $jabatan !== '') { 
-            $role = $this->getRoleFromJabatan($jabatan); 
+        $role = $this->getRoleFromJabatan($jabatan); // Mengkonversi jabatan ke role
 
+        $unitKerjaCoordinate = $unitKerjaColumn . $row->getRowIndex();
+        $unitKerja = $this->worksheet->getCell($unitKerjaCoordinate)->getValue();
+
+        if (in_array($unitKerja, $unitKerjas) && $role !== null && $role !== '') {
             if (!isset($barData[$role])) {
                 $barData[$role] = 0;
             }
