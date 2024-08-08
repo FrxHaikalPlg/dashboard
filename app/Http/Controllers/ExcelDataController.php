@@ -203,7 +203,11 @@ class ExcelDataController extends Controller
             if (in_array($unitKerja, $unitKerjas)) {
                 $rowData = [];
                 foreach ($this->getColumnNames() as $columnName) {
-                    $rowData[$columnName] = $this->worksheet->getCell($this->findColumn($columnName) . $rowIndex)->getValue();
+                    $cellValue = $this->worksheet->getCell($this->findColumn($columnName) . $rowIndex)->getValue();
+                    if (strtolower(trim($columnName)) === 'tanggal lahir' && ExcelDate::isDateTime($this->worksheet->getCell($this->findColumn($columnName) . $rowIndex))) {
+                        $cellValue = ExcelDate::excelToDateTimeObject($cellValue)->format('d/m/Y');
+                    }
+                    $rowData[$columnName] = $cellValue;
                 }
                 $data[] = $rowData;
             }
@@ -218,7 +222,10 @@ class ExcelDataController extends Controller
         $cellIterator->setIterateOnlyExistingCells(true);
         $columnNames = [];
         foreach ($cellIterator as $cell) {
-            $columnNames[] = $cell->getValue();
+            $columnName = $cell->getValue();
+            if (strtolower(trim($columnName)) !== 'no.') {
+                $columnNames[] = $columnName;
+            }
         }
         return $columnNames;
     }
