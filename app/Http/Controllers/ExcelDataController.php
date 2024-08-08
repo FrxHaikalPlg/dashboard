@@ -144,29 +144,54 @@ class ExcelDataController extends Controller
         }
         return $generations;
     }
-
-    private function fetchBarData($city = null)
-    {
-        $unitKerjaToCityMap = $this->getUnitKerjaToCityMap();
-        $unitKerjas = $city ? $unitKerjaToCityMap[$city] : Arr::flatten($unitKerjaToCityMap);
-        $selectedBarColumn = $this->findColumn('role');
-        $unitKerjaColumn = $this->findColumn('unit kerja'); // Menemukan kolom unit kerja
-        $barData = [];
-
-        foreach ($this->worksheet->getRowIterator(2) as $row) {
-            $cellCoordinate = $selectedBarColumn . $row->getRowIndex();
-            $value = $this->worksheet->getCell($cellCoordinate)->getValue();
-            $unitKerjaCoordinate = $unitKerjaColumn . $row->getRowIndex(); // Menggunakan kolom unit kerja yang ditemukan
-            $unitKerja = $this->worksheet->getCell($unitKerjaCoordinate)->getValue();
-            if (in_array($unitKerja, $unitKerjas) && $value !== null && $value !== '') {
-                if (!isset($barData[$value])) {
-                    $barData[$value] = 0;
-                }
-                $barData[$value]++;
-            }
+    protected function getRoleFromJabatan($jabatan) {
+        if (empty(trim($jabatan))) {
+            return null; 
         }
-        return $barData;
+    
+        
+    $roleMappings = [
+        '/Account Representative|Petugas Administrasi Peserta|Relationship Manager/' => 'Kepesertaan',
+        '/Customer Service Officer|Manajer Kasus|Penata Pelayanan|Layanan/' => 'Pelayanan',
+        '/Kepala Bidang/' => 'Kabid',
+        '/Kepala Kantor Cabang/' => 'Kepala Cabang',
+        '/Penata Keuangan|Penata Operasional Cabang|Penata Pengendalian dan Risiko|Penata Pengendalian Operasional /' => 'Pengendalian Operasional',
+        '/Petugas Pemeriksa/' => 'Wasrik',
+        '/Wakil Kepala Wilayah/' => 'Wakil Kepala Wilayah',
+        '/Human Capital|IT Solution|Penata Sarana dan Prasarana|Penata Kesekretariatan/' => 'DHCA',
+        '/Penata Tata Kelola, Risiko, dan Kepatuhan|Penata Pengendalian Operasional Wilayah/' => 'Keuangan dan MR'
+    ];
+
+    foreach ($roleMappings as $pattern => $role) {
+        if (preg_match($pattern, $jabatan)) {
+            return $role;
+        }
     }
+
+    return $jabatan; 
+
+}
+    private function fetchBarData($city = null)
+{
+    $unitKerjaToCityMap = $this->getUnitKerjaToCityMap();
+    $unitKerjas = $city ? $unitKerjaToCityMap[$city] : Arr::flatten($unitKerjaToCityMap);
+    $jabatanColumn = $this->findColumn('jabatan');
+    $barData = [];
+
+    foreach ($this->worksheet->getRowIterator(2) as $row) {
+        $cellCoordinate = $jabatanColumn . $row->getRowIndex();
+        $jabatan = $this->worksheet->getCell($cellCoordinate)->getValue();
+        if ($jabatan !== null && $jabatan !== '') { 
+            $role = $this->getRoleFromJabatan($jabatan); 
+
+            if (!isset($barData[$role])) {
+                $barData[$role] = 0;
+            }
+            $barData[$role]++;
+        }
+    }
+    return $barData;
+}
 
     private function fetchJenisKelaminData($city = null)
     {
