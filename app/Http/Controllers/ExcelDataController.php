@@ -28,14 +28,17 @@ class ExcelDataController extends Controller
     {
         $city = $request->query('city'); // Mengambil kota dari query parameter
         $cities = $this->fetchCities();
-        $generations = $this->calculateGenerations($city);
-        $barData = $this->fetchBarData($city);
-        $jenisKelaminData = $this->fetchJenisKelaminData($city);
+        $generations = [];
+        $barData = [];
+        $jenisKelaminData = [];
         $excelData = [];
         $columnNames = [];
         $error = null;
 
         try {
+            $generations = $this->calculateGenerations($city);
+            $barData = $this->fetchBarData($city);
+            $jenisKelaminData = $this->fetchJenisKelaminData($city);
             $excelData = $this->fetchExcelData($city);
             $columnNames = $this->getColumnNames();
         } catch (\Exception $e) {
