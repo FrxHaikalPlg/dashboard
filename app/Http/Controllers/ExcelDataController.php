@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Arr;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 class ExcelDataController extends Controller
 {
@@ -14,14 +15,19 @@ class ExcelDataController extends Controller
 
     public function __construct()
     {
-        $this->loadSpreadsheet(storage_path('app/public/tes_data.xlsx'));
+        // Hapus pemanggilan loadSpreadsheet dari constructor
     }
 
-    public function loadSpreadsheet($path)
+    public function loadSpreadsheetFromSession($fileContent)
     {
+        $tempFilePath = tempnam(sys_get_temp_dir(), 'excel');
+        file_put_contents($tempFilePath, $fileContent);
+
         $reader = new Xlsx();
-        $spreadsheet = $reader->load($path);
+        $spreadsheet = $reader->load($tempFilePath);
         $this->worksheet = $spreadsheet->getActiveSheet();
+
+        unlink($tempFilePath); // Hapus file sementara setelah digunakan
     }
 
     public function index(Request $request)
@@ -36,15 +42,20 @@ class ExcelDataController extends Controller
         $error = null;
 
         try {
-            $generations = $this->calculateGenerations($city);
-            $barData = $this->fetchBarData($city);
-            $jenisKelaminData = $this->fetchJenisKelaminData($city);
-            $excelData = $this->fetchExcelData($city);
-            $columnNames = $this->getColumnNames();
+            $fileContent = $request->session()->get('uploaded_excel');
+            if ($fileContent) {
+                $this->loadSpreadsheetFromSession($fileContent);
+                $generations = $this->calculateGenerations($city);
+                $barData = $this->fetchBarData($city);
+                $jenisKelaminData = $this->fetchJenisKelaminData($city);
+                $excelData = $this->fetchExcelData($city);
+                $columnNames = $this->getColumnNames();
+            } else {
+                throw new \Exception("No file uploaded.");
+            }
         } catch (\Exception $e) {
             $error = $e->getMessage();
         }
-
         return view('welcome', [
             'barDataLabels' => $barData ? array_keys($barData) : [],
             'barDataCounts' => $barData ? array_values($barData) : [],
@@ -298,9 +309,8 @@ class ExcelDataController extends Controller
         ]);
 
         $file = $request->file('file');
-        $path = $file->storeAs('public', 'tes_data.xlsx');
-
-        $this->loadSpreadsheet(storage_path('app/' . $path));
+        $fileContent = file_get_contents($file->getRealPath());
+        $request->session()->put('uploaded_excel', $fileContent);
 
         return redirect()->back()->with('success', 'File uploaded successfully.');
     }
