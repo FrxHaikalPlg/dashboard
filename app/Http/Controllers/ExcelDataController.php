@@ -305,7 +305,7 @@ class ExcelDataController extends Controller
     public function uploadFile(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx|max:2048',
+            'file' => 'required|mimes:xlsx,xls|max:5120',
         ]);
 
         $file = $request->file('file');

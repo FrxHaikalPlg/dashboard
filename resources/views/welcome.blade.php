@@ -37,7 +37,8 @@
      </h1>
    </div> 
       
-   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+   <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+      <div class="grid grid-cols-1 sm:grid-cols-1 gap-4 mb-4">
          <div class="rounded-lg h-auto shadow md:h-auto flex flex-col max-h-96 bg-white dark:bg-gray-800 overflow-x-auto">
             <div class="flex justify-center items-center p-4">
                <div class="flex justify-center items-center mt-1 shadow block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
@@ -46,7 +47,7 @@
             </div>
             <div id="bar-chart" class="flex-1 m-0 p-0 relative w-auto"></div>
          </div>
-         
+      </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
          <div class="rounded-lg h-64 shadow md:h-96 flex flex-col bg-white dark:bg-gray-800">
             <div class="flex justify-center items-center p-4">
@@ -160,8 +161,8 @@
                <form action="{{ route('upload.file') }}" method="POST" enctype="multipart/form-data">
                   @csrf
                   <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
-                  <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file" name="file">
-                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">.xlsx</p>
+                  <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file" name="file" accept=".xlsx,.xls">
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">.xlsx, .xls | Max 5MB</p>
                   <button type="submit" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Upload</button>
                </form>
             </div>

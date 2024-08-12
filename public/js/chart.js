@@ -18,6 +18,14 @@ document.addEventListener('DOMContentLoaded', function () {
       }
    }
 
+   // Function to get chart height based on screen width
+   function getChartHeight() {
+      if (window.innerWidth >= 768 && window.innerWidth < 1024) {
+         return '100%';
+      }
+      return '75%';
+   }
+
    // Chart Jenis Kelamin
    var pieOptions = {
       series: pieDataCounts,
@@ -87,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
          },
          type: "bar",
          width: "95%",
-         height: "75%",
+         height: getChartHeight(), // Set initial height
          toolbar: {
            show: false,
          }
@@ -226,6 +234,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
    generationChart = new ApexCharts(document.querySelector("#generationChart"), generationOptions);
    generationChart.render();
+
+   // Update chart height on window resize
+   window.addEventListener('resize', function() {
+      var newHeight = getChartHeight();
+      barChart.updateOptions({ chart: { height: newHeight } });
+   });
 });
 
 document.getElementById('bar_column').addEventListener('change', function() {
