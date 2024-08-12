@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
          fontFamily: "Inter, sans-serif",
          },
       },
-      colors: ['#99154B', '#1E429F'], // Warna untuk Wanita (pink) dan Laki-laki (biru)
+      colors: ['#E74694', '#6875F5'], // Warna untuk Wanita (pink) dan Laki-laki (biru)
       legend: {
          position: "bottom",
          fontFamily: "Inter, sans-serif",
@@ -86,8 +86,8 @@ document.addEventListener('DOMContentLoaded', function () {
            enabled: false,
          },
          type: "bar",
-         width: "100%",
-         height: 400,
+         width: "95%",
+         height: "75%",
          toolbar: {
            show: false,
          }
@@ -111,9 +111,14 @@ document.addEventListener('DOMContentLoaded', function () {
          position: "bottom",
        },
        dataLabels: {
-         enabled: false,
+         enabled: true,
+          offsetX: -6,
+          style: {
+            fontSize: '12px',
+            colors: ['#fff']
+          },
        },
-      colors: ['#FF4560', '#008FFB', '#00E396', '#775DD0'],
+      //colors: [''],
       xaxis: {
             categories: barDataLabels,
             labels: {
@@ -158,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
    var generationOptions = {
       series: filteredGenerationData,
-      colors: ['#9F580A', '#057A55', '#4F1787', '#180161'], // Warna untuk Gen X (merah), Gen Y (kuning), Gen Z (hijau), dan Baby Boomer (ungu)
+      colors: ['#FEB019', '#00E396', '#FF4560', '#775DD0'], // Warna untuk Gen X (kuning), Gen Y (hijau), Gen Z (merah), dan Baby Boomer (ungu)
       chart: {
          type: 'pie',
          height: '80%', // Adjust height based on data length
