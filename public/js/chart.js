@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
    var generationOptions = {
       series: filteredGenerationData,
-      colors: ['#FEB019', '#00E396', '#FF4560', '#775DD0'], // Warna untuk Gen X (kuning), Gen Y (hijau), Gen Z (merah), dan Baby Boomer (ungu)
+      colors: ['#0077c0', '#8dc63f', '#FF4560', '#775DD0'], // Warna untuk Gen X (kuning), Gen Y (hijau), Gen Z (merah), dan Baby Boomer (ungu)
       chart: {
          type: 'pie',
          height: '80%', // Adjust height based on data length

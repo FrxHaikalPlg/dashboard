@@ -27,7 +27,7 @@
    <main class="flex-1 p-4 md:ml-64 h-auto pt-4 overflow-y-auto">
 
    <!-- Heading -->
-   <div class="flex justify-center items-center mb-4 shadow block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
+   <div class="flex justify-center items-center mb-4 shadow w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
          @if($selectedCity)
              DATA {{ $selectedCity }}
@@ -41,7 +41,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-1 gap-4 mb-4">
          <div class="rounded-lg h-auto shadow md:h-auto flex flex-col max-h-96 bg-white dark:bg-gray-800 overflow-x-auto">
             <div class="flex justify-center items-center p-4">
-               <div class="flex justify-center items-center mt-1 shadow block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
+               <div class="flex justify-center items-center mt-1 shadow w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
                   <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white pe-1">Role</h5>
                </div>   
             </div>
@@ -51,7 +51,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
          <div class="rounded-lg h-64 shadow md:h-96 flex flex-col bg-white dark:bg-gray-800">
             <div class="flex justify-center items-center p-4">
-               <div class="flex justify-center shadow items-center mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
+               <div class="flex justify-center shadow items-center mt-1 w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
                   <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white pe-1">Jenis Kelamin</h5>
                </div>   
             </div>
@@ -59,7 +59,7 @@
          </div>
          <div class="rounded-lg h-64 shadow md:h-96 flex flex-col max-h-96 bg-white dark:bg-gray-800">
             <div class="flex justify-center items-center p-4">
-               <div class="flex justify-center shadow items-center mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
+               <div class="flex justify-center shadow items-center mt-1 w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 sm:text-sm rounded-md bg-white text-gray-900 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white">
                   <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white pe-1">Generasi</h5>
                </div>   
             </div>
@@ -127,12 +127,20 @@
               </tbody>
           </table>
           <script>
-              if (document.getElementById("search-table") && typeof simpleDatatables.DataTable !== 'undefined') {
-                  const dataTable = new simpleDatatables.DataTable("#search-table", {
-                      searchable: true,
-                      sortable: true
-                  });
-              }
+              document.addEventListener('DOMContentLoaded', function () {
+                  var table = document.querySelector('#search-table');
+                  var dataTable;
+
+                  try {
+                      dataTable = new simpleDatatables.DataTable(table, {
+                          searchable: true,
+                          sortable: true
+                      });
+                  } catch (error) {
+                      console.error('Error initializing DataTable:', error);
+                      alert('Terjadi kesalahan saat memuat data. Pastikan semua kolom memiliki heading yang valid.');
+                  }
+              });
           </script>
       </div>
    </main>

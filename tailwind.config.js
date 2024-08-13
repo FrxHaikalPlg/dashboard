@@ -30,7 +30,11 @@ module.exports = {
           "800": "#1e40af",
           "900": "#1e3a8a",
           "950": "#172554"
-        }
+        },
+        'kuning-bpjs' : '#d7df23',
+        'biru-bpjs' : '#0077c0',
+        'hijau-bpjs' : '#00b74f',
+        'lime-bpjs' : '#8dc63f',
       },
       fontFamily: {
         'body': [

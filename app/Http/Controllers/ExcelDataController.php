@@ -264,9 +264,15 @@ class ExcelDataController extends Controller
         $cellIterator = $firstRow->getCellIterator();
         $cellIterator->setIterateOnlyExistingCells(true);
         $columnNames = [];
+        $unnamedCount = 1; // Counter untuk kolom tanpa nama
         foreach ($cellIterator as $cell) {
             $columnName = $cell->getValue();
             if (strtolower(trim($columnName)) !== 'no.') {
+                // Jika kolom kosong, berikan nama default
+                if (empty(trim($columnName))) {
+                    $columnName = 'Unnamed Column ' . $unnamedCount;
+                    $unnamedCount++;
+                }
                 $columnNames[] = $columnName;
             }
         }
@@ -278,29 +284,35 @@ class ExcelDataController extends Controller
         $firstRow = $this->worksheet->getRowIterator(1)->current();
         $cellIterator = $firstRow->getCellIterator();
         $cellIterator->setIterateOnlyExistingCells(true);
+        $unnamedCount = 1; // Counter untuk kolom tanpa nama
         foreach ($cellIterator as $cell) {
-            if (strtolower(trim($cell->getValue())) === strtolower($columnName)) {
+            $cellValue = $cell->getValue();
+            if (empty(trim($cellValue))) {
+                $cellValue = 'Unnamed Column ' . $unnamedCount;
+                $unnamedCount++;
+            }
+            if (strtolower(trim($cellValue)) === strtolower($columnName)) {
                 return $cell->getColumn();
             }
         }
         throw new \Exception("Column '$columnName' not found in the Excel file.");
     }
 
-    private function readColumnData($column)
-    {
-        $data = [];
-        foreach ($this->worksheet->getRowIterator(2) as $row) {
-            $cellCoordinate = $column . $row->getRowIndex();
-            $value = $this->worksheet->getCell($cellCoordinate)->getValue();
-            if ($value !== null && $value !== '') {
-                if (!isset($data[$value])) {
-                    $data[$value] = 0;
-                }
-                $data[$value]++;
-            }
-        }
-        return $data;
-    }
+    // private function readColumnData($column)
+    // {
+    //     $data = [];
+    //     foreach ($this->worksheet->getRowIterator(2) as $row) {
+    //         $cellCoordinate = $column . $row->getRowIndex();
+    //         $value = $this->worksheet->getCell($cellCoordinate)->getValue();
+    //         if ($value !== null && $value !== '') {
+    //             if (!isset($data[$value])) {
+    //                 $data[$value] = 0;
+    //             }
+    //             $data[$value]++;
+    //         }
+    //     }
+    //     return $data;
+    // }
 
     public function uploadFile(Request $request)
     {
